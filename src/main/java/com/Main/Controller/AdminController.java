@@ -34,7 +34,7 @@ public class AdminController {
 	
 	
 	@PostMapping("/addSupplier")
-    public ResponseEntity<String> addSupplier(@RequestBody Supplier supplier) {
+    public ResponseEntity<String> addSupplier(@Valid @RequestBody Supplier supplier) {
         System.out.println("Adding Supplier: " + supplier.getSupplier_name());
         service.addSupplier(supplier);
         return new ResponseEntity<>("Supplier added", HttpStatus.OK);
@@ -78,8 +78,8 @@ public class AdminController {
 	}
 	
 	@GetMapping("/getOrderById/{id}")
-	public ResponseEntity<Order> getOrderById(@PathVariable("id") int id){
-		return new ResponseEntity<Order>(service.getOrderById(id),HttpStatus.OK);
+	public ResponseEntity<OrderDTO> getOrderById(@PathVariable("id") int id){
+		return new ResponseEntity<OrderDTO>(service.getOrderById(id),HttpStatus.OK);
 	}
 	
 	@PostMapping("/assignOrder/{id}/{orderId}")
@@ -107,7 +107,7 @@ public class AdminController {
 	@PostMapping("/addCustomer")
 	public ResponseEntity<String> addCustomer(@Valid @RequestBody Customer customer){
 		service.addCustomer(customer);
-		return new ResponseEntity<String>("Customer added successfully with Id : "+customer.getCust_Id()+" Please search '/getSupplierById' to view supplier\n\n",HttpStatus.OK);
+		return new ResponseEntity<String>("Customer added successfully with Id : "+customer.getCust_Id()+" Please search '/getCustomerById' to view supplier\n\n",HttpStatus.OK);
 	}
 	
 	@GetMapping("/getCustomerById/{id}")
@@ -116,7 +116,7 @@ public class AdminController {
 	}
 	
 	@GetMapping("/getAllCustomers")
-	public ResponseEntity<List<Customer>> getAllCustomers(){
+	public ResponseEntity<List<CustomerDTO>> getAllCustomers(){
 		return new ResponseEntity<>(service.getAllCustomers(),HttpStatus.OK);
 	}
 	
@@ -154,7 +154,7 @@ public class AdminController {
 	}
 	
 	@PostMapping("/addNewProduct")
-	public ResponseEntity<String>addNewProduct(@RequestBody Product prod){
+	public ResponseEntity<String>addNewProduct(@Valid @RequestBody Product prod){
 		service.addNewProduct(prod);
 		return new ResponseEntity<String>("Product added successfully",HttpStatus.OK);
 	}
@@ -164,6 +164,18 @@ public class AdminController {
 		service.updateProduct(id,prod);
 		return new ResponseEntity<String>("Product Updated Successfully",HttpStatus.OK);
 	}
+	@DeleteMapping("/removeAllProducts")
+	public ResponseEntity<String>removeAllProducts(){
+		service.removeAllProducts();
+		return new ResponseEntity<String>("Products removed successsfully",HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/removeProductById/{id}")
+	public ResponseEntity<String>removeProductById(@PathVariable("id")int id){
+		service.removeProductById(id);
+		return new ResponseEntity<String>("Product Removed successfully",HttpStatus.OK);
+	}
+	
 	
 	//Users
 	@GetMapping("/getAllUsers")
@@ -171,6 +183,17 @@ public class AdminController {
 		return new ResponseEntity<>(service.getAllUsers(),HttpStatus.OK);
 	}
 	
+	@DeleteMapping("/removeUserById/{id}")
+	public ResponseEntity<String>removeUserById(@PathVariable("id")int id){
+		service.removeUserById(id);
+		return new ResponseEntity<String>("User removed successsfully",HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/removeAllUsers")
+	public ResponseEntity<String>removeAllUsers(){
+		service.removeAllUsers();
+		return new ResponseEntity<String>("All Users removed successsfully",HttpStatus.OK);
+	}
 	
 	
 	//Payment Section

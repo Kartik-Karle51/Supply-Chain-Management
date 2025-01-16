@@ -4,11 +4,11 @@ public class ProductDTO {
 
 	private int id;
 	private String name;
-	private int qty;
+	private int quantity;
 	private int price;
 	@Override
 	public String toString() {
-		return "ProductDTO [id=" + id + ", name=" + name + ", qty=" + qty + ", price=" + price + "]";
+		return "ProductDTO [id=" + id + ", name=" + name + ", qty=" + quantity + ", price=" + price + "]";
 	}
 	public ProductDTO() {
 		super();
@@ -18,7 +18,7 @@ public class ProductDTO {
 		super();
 		this.id = id;
 		this.name = name;
-		this.qty = qty;
+		quantity = qty;
 		this.price = price;
 	}
 	public int getId() {
@@ -33,11 +33,11 @@ public class ProductDTO {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public int getQty() {
-		return qty;
+	public int getQuantity() {
+		return quantity;
 	}
-	public void setQty(int qty) {
-		this.qty = qty;
+	public void setQty(int quantity ) {
+		this.quantity = quantity;
 	}
 	public int getPrice() {
 		return price;

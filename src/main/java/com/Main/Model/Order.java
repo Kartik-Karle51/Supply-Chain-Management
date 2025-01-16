@@ -27,11 +27,14 @@ public class Order {
 	public void setDate(LocalDate date) {
 		this.date = date;
 	}
-	@ManyToOne(fetch = FetchType.EAGER)
+	
+	
+	
+	@ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
 	@JoinColumn(name = "Supplier_Id")
 	private Supplier supplier;
 	
-	@OneToOne(mappedBy = "order",cascade = CascadeType.PERSIST)
+	@OneToOne(mappedBy = "order",cascade = CascadeType.ALL)
 	private Payment payment;
 
 
@@ -54,8 +57,7 @@ public class Order {
 	public void setPayment(Payment payment) {
 		this.payment = payment;
 	}
-	@ManyToMany
-    
+	@ManyToMany(cascade = CascadeType.MERGE)    
 	private List<Product>prod;
 
 	@ManyToOne

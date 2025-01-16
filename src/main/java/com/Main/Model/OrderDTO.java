@@ -25,17 +25,22 @@ public class OrderDTO {
     // List of ProductDTO
     private List<ProductDTO> products;
 
-    public OrderDTO(int id, int custId, String customer_name, String supplier_name, String status, String paymentstatus, List<ProductDTO> products) {
-        this.id = id;
-        this.CustId = custId;
-        this.supplier_name = supplier_name;
-        this.Customer_name = customer_name;
-        this.status = status;
-        this.Paymentstatus = paymentstatus;
-        this.products = products;
-    }
+  
 
-    public int getId() {
+    public OrderDTO(int id, int custId, String customer_name, String supplier_name, String status, String paymentstatus,
+			List<ProductDTO> products) {
+		super();
+		this.id = id;
+		CustId = custId;
+	
+		Customer_name = customer_name;
+		this.supplier_name = supplier_name;
+		this.status = status;
+		Paymentstatus = paymentstatus;
+		this.products = products;
+	}
+
+	public int getId() {
         return id;
     }
 

@@ -32,10 +32,10 @@ public class Supplier {
 		this.email = email;
 	}
 
-	@OneToMany(mappedBy = "supplier")
+	@OneToMany(mappedBy = "supplier",cascade = CascadeType.ALL)
 	private List<Customer> cust;
 	
-	@OneToMany(mappedBy = "supplier")
+	@OneToMany(mappedBy = "supplier",cascade = CascadeType.ALL)
 	private List<Order> order;
 
 	public int getSupplier_id() {

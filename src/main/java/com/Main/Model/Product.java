@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Product {
@@ -17,13 +18,16 @@ public class Product {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
+	 @NotNull(message = "Price cannot be null")
 	private int price;
+	 @NotNull(message = "Product name cannot be null")
 	private String name;
+	 @NotNull(message = "Quantity cannot be null")
 	private int quantity;
 	
 
 	
-	@ManyToMany(mappedBy = "prod")
+	@ManyToMany(mappedBy = "prod",cascade = {CascadeType.DETACH,CascadeType.PERSIST,CascadeType.MERGE,CascadeType.ALL})
 	private List<Order> order;
 	
 	public Product(int id, int price, String name, int quantity,List<Order> order) {

@@ -7,7 +7,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.Main.Exception.CustomerNotFoundException;
 import com.Main.Exception.InsufficientQuantityException;
 import com.Main.Exception.NoQtyException;
 import com.Main.Exception.OrderAlreadyDeliveredException;
@@ -86,87 +88,189 @@ public class CustomerService {
 	}
 
 	
-	public void updateQty(Order order) {
-	    List<Product> products = order.getProd();  // This is a List<Product>
-	    
-	    for (Product prod : products) {
-	        int id = prod.getId();
-	        // Fetch the product from the repository
-	        Product p = p_repo.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
-	        
-	        int originalQty = p.getQuantity();
-	        int orderQty = prod.getQuantity();
-	        
-	        // Ensure there is enough stock to reduce
-	        int newQty = originalQty - orderQty;
-	        if (newQty < 0||newQty>originalQty) {
-	            throw new InsufficientQuantityException();
-	        }
+//	public void updateQty(Order order) {
+//	    List<Product> products = order.getProd();  // This is a List<Product>
+//
+//	    for (Product prod : products) {
+//	        int id = prod.getId();
+//	        // Fetch the product from the repository
+//	        Product p = p_repo.findById(id).orElseThrow(() -> new RuntimeException("Product with id " + id + " not found"));
+//
+//	        int originalQty = p.getQuantity();
+//	        int orderQty = prod.getQuantity();
+//
+//	        // Ensure there is enough stock to reduce
+//	        int newQty = originalQty - orderQty;
+//	        
+//	        // Check if the stock is sufficient
+//	        if (newQty < 0) {
+//	            throw new InsufficientQuantityException();
+//	        }
+//
+//	        // Update the product's quantity and save it back to the repository
+//	        p.setQuantity(newQty);
+//	        p_repo.save(p);
+//	    }
+//	}
 
-	        // Update the product's quantity and save it back to the repository
-	        p.setQuantity(newQty);
-	        p_repo.save(p);
+
+	
+	
+//	public int makeOrder(Order order,int id) {
+//		 if (available(order)) {
+//	  Customer c=c_repo.findById(id).get();
+//	  double price=0;
+//	  List<Product>products=order.getProd();
+//	  for(Product prod:products) {
+//		  price+=prod.getQuantity()*prod.getPrice();
+//          System.out.println(prod.getQuantity());
+//	  }
+//	  Payment pay=new Payment();
+//	  pay.setCust(c);
+//	  pay.setOrder(order);
+//	  pay.setPrice(price);
+//	  pay.setStatus("Pending");
+//	 
+//	    	order.setProd(order.getProd());
+//	    	order.setDate(LocalDate.now());
+//	    	order.setCust(c);
+//	        o_repo.save(order);
+//	        paymentRepo.save(pay);
+//	 	   
+//	        o_repo.findById(order.getOrder_id()).get().setStatus("Pending");
+//	        updateQty(order);
+//	        return o_repo.findById(order.getOrder_id()).get().getOrder_id();
+//	    } else {
+//	        throw new InsufficientQuantityException();
+//	    }
+//	}
+//
+//
+//	
+//	
+//	public void updateOrder(Order order,int id) {
+//	Order o=o_repo.findById(id).orElseThrow(() -> new OrderNotFoundException());
+//	if(o.getStatus().toLowerCase().equals("delivered"));
+//	{
+//		new OrderAlreadyDeliveredException();
+//	}
+//	
+//	if(available(order)) {
+//		double price=0;
+//		  List<Product>products=order.getProd();
+//		  for(Product prod:products) {
+//			  price+=prod.getQuantity()*prod.getPrice();
+//		  }
+//		  Payment pay=o.getPayment();
+//		  pay.setOrder(o);
+//		  pay.setPrice(price);
+//		  pay.setStatus("Pending");
+//			 paymentRepo.save(pay);
+//	o.setProd(order.getProd());
+//	o.setDate(LocalDate.now());
+//	o_repo.save(o);
+//
+//	updateQty(order);}
+//	}
+
+	public Product updateQty(Product prod, int orderQuantity) {
+	    // Fetch the product from the repository
+	    Product p = p_repo.findById(prod.getId()).orElseThrow(() -> new RuntimeException("Product with id " + prod.getId() + " not found"));
+
+	    int originalQty = p.getQuantity();
+
+	    // Ensure there is enough stock to reduce
+	    int newQty = originalQty - orderQuantity;
+	    System.out.println(prod.getName()+" "+newQty);
+	    // Check if the stock is sufficient
+	    if (newQty < 0) {
+	        throw new InsufficientQuantityException();
 	    }
+
+	    // Update the product's quantity and save it back to the repository
+	    p.setQuantity(newQty);
+	   return p;
 	}
 
 	
 	
-	public int makeOrder(Order order,int id) {
-		 if (available(order)) {
-	  Customer c=c_repo.findById(id).get();
-	  double price=0;
-	  List<Product>products=order.getProd();
-	  for(Product prod:products) {
-		  price+=prod.getQuantity()*prod.getPrice();
-	  }
-	  Payment pay=new Payment();
-	  pay.setCust(c);
-	  pay.setOrder(order);
-	  pay.setPrice(price);
-	  pay.setStatus("Pending");
+	@Transactional
+	public int makeOrder(Order order, int customerId) {
+	    if (available(order)) {
+	        Customer c = c_repo.findById(customerId).orElseThrow(() -> new CustomerNotFoundException());
+	        double price = 0;
+	        List<Product> products = order.getProd();
+	        
+	        // Calculate price and track quantities for order
+	        for (Product prod : products) {
+	            price += prod.getQuantity() * prod.getPrice();
+	            // Ensure product quantities are updated correctly based on the order
+	            // Assuming updateQty adjusts the product stock quantity correctly
+	            p_repo.save(updateQty(prod, prod.getQuantity()));
+	        }
 
-	   
-	    	order.setProd(order.getProd());
-	    	order.setDate(LocalDate.now());
-	    	order.setCust(c);
+	        Payment pay = new Payment();
+	        pay.setCust(c);
+	        pay.setOrder(order);
+	        pay.setPrice(price);
+	        pay.setStatus("Pending");
+
+	        order.setDate(LocalDate.now());
+	        order.setCust(c);
+
+	        // Save the order and payment
 	        o_repo.save(order);
 	        paymentRepo.save(pay);
-	        o_repo.findById(order.getOrder_id()).get().setStatus("Pending");
-	        updateQty(order);
-	        return o_repo.findById(order.getOrder_id()).get().getOrder_id();
+
+	        // Optional: Update order status if needed
+	        o_repo.findById(order.getOrder_id()).ifPresent(o -> {
+	            o.setStatus("Pending");
+	            o_repo.save(o);
+	        });
+
+	        return order.getOrder_id();
 	    } else {
 	        throw new InsufficientQuantityException();
 	    }
 	}
 
+	@Transactional
+	public void updateOrder(Order order, int id) {
+	    Order existingOrder = o_repo.findById(id).orElseThrow(() -> new OrderNotFoundException());
 
-	
-	
-	public void updateOrder(Order order,int id) {
-	Order o=o_repo.findById(id).orElseThrow(() -> new OrderNotFoundException());
-	if(o.getStatus().toLowerCase().equals("delivered"));
-	{
-		new OrderAlreadyDeliveredException();
+	    if (existingOrder.getStatus().toLowerCase().equals("delivered")) {
+	        throw new OrderAlreadyDeliveredException();
+	    }
+
+	    if (available(order)) {
+	        double price = 0;
+	        List<Product> products = order.getProd();
+
+	        // Calculate price and adjust product quantities
+	        for (Product prod : products) {
+	            price += prod.getQuantity() * prod.getPrice();
+	            // Update the stock quantity based on the new order details
+	           p_repo.save(updateQty(prod, prod.getQuantity()));
+	        }
+
+	        Payment pay = existingOrder.getPayment();
+	        pay.setOrder(existingOrder);
+	        pay.setPrice(price);
+	        pay.setStatus("Pending");
+	        paymentRepo.save(pay);
+
+	        // Update the existing order with new details
+	        existingOrder.setProd(products);
+	        existingOrder.setDate(LocalDate.now());
+	        o_repo.save(existingOrder);
+
+	     
+	    }
 	}
+
 	
-	if(available(order)) {
-		double price=0;
-		  List<Product>products=order.getProd();
-		  for(Product prod:products) {
-			  price+=prod.getQuantity()*prod.getPrice();
-		  }
-		  Payment pay=o.getPayment();
-		  pay.setOrder(o);
-		  pay.setPrice(price);
-		  pay.setStatus("Pending");
-			 paymentRepo.save(pay);
-	o.setProd(order.getProd());
-	o.setDate(LocalDate.now());
-	o_repo.save(o);
-
-	updateQty(order);}
-	}
-
+	
+	
 	
 	//Get SupplierDetails
 
@@ -193,7 +297,6 @@ public class CustomerService {
 
 	public List<OrderDTO> getMyOrders(int id) {
 	    List<Order> orders = o_repo.findOrderrsByCustomerId(id);
-	    
 	    return orders.stream()
 	        .map(order -> {
 	            // Convert the products to ProductDTO
@@ -208,12 +311,13 @@ public class CustomerService {
 	                order.getCust().getName(),
 	                order.getSupplier() != null ? order.getSupplier().getSupplier_name() : "no supplier",
 	                order.getStatus(),
-	                order.getPayment().getStatus(),
+	                order.getPayment().getStatus()+" Price: "+order.getPayment().getPrice(),
 	                productDTOs
 	            );
 	        })
 	        .collect(Collectors.toList());
 	}
+
 
 
 

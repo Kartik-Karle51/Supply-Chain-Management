@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 
+
+
 @ControllerAdvice
 public class Global_Exception_Handler {
 
@@ -85,5 +87,16 @@ public class Global_Exception_Handler {
 	@ExceptionHandler(NoQtyException.class)
 	public ResponseEntity<String>NoQtyException(){
 		return new ResponseEntity<String>("Please Enter quantity more than 0",HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(CustomerAlreadyExistsException.class)
+	public ResponseEntity<String>customerAlreadyExistsException(){
+		return new ResponseEntity<String>("Please Enter different details because a customer is already present in the system with this details",HttpStatus.BAD_REQUEST);
+	}
+	
+	
+	@ExceptionHandler(SupplierAlreadyExistsException.class)
+	public ResponseEntity<String>supplierAlreadyExistsException(){
+		return new ResponseEntity<String>("Please Enter different details because a supplier is already present in the system with this details",HttpStatus.BAD_REQUEST);
 	}
 }

@@ -26,7 +26,7 @@ private long phone;
 @Email(message = "Email should be valid")
 private String email;
 
-@OneToMany(mappedBy = "cust")
+@OneToMany(mappedBy = "cust",cascade = CascadeType.ALL)
 private List<Payment> payment;
 
 
