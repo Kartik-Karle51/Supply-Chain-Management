@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.Main.Exception.AllOrdersDeliveredException;
@@ -24,6 +25,9 @@ import com.Main.Repository.UserRepository;
 @Service
 public class SupplierService {
 
+	@Autowired
+    private PasswordEncoder passwordEncoder;
+	
 	
 	@Autowired
 	ProductRepo p_repo;
@@ -46,7 +50,7 @@ public class SupplierService {
 			if(!user.getPassword().equals(oldPass)) {
 				new PasswordMismatchException();
 			}
-			user.setPassword(pass);
+			user.setPassword(passwordEncoder.encode(pass));
 			u_repo.save(user);
 		}
 

@@ -41,8 +41,8 @@ public class Admin_Service {
 	@Autowired
 	SendEmail email;
 	
-//	@Autowired
-//    private PasswordEncoder passwordEncoder;
+	@Autowired
+    private PasswordEncoder passwordEncoder;
 	
 	//For Generating Password
 	public String generatePassword() {
@@ -76,7 +76,7 @@ public class Admin_Service {
 		}
 		String password=generatePassword();
 	user.setName(supplier.getSupplier_name());
-	user.setPassword(password);
+	user.setPassword(passwordEncoder.encode(password));
 	user.setRole("SUPPLIER");
 	u_repo.save(user);
 	Supplier s=s_repo.save(supplier);
@@ -102,42 +102,13 @@ public class Admin_Service {
 		return s_repo.findAll();
 	}
 
-//	public void removeSupplierById(int id) {
-//		s_repo.deleteById(id);
-//	}
 
 	public void removeAllSuppliers() {
 		s_repo.deleteAll();
 	}
 
 	
-	
-	
-	// Order Section
 
-//	public List<OrderDTO> getAllOrders() {
-//	    List<Order> orders = o_repo.findAll();
-//	    
-//	    return orders.stream()
-//	        .map(order -> {
-//	            // Convert the products to ProductDTO
-//	            List<ProductDTO> productDTOs = order.getProd().stream()
-//	                .map(product -> new ProductDTO(product.getId(), product.getName(), product.getQuantity(), product.getPrice()))
-//	                .collect(Collectors.toList());
-//	            System.out.println(productDTOs);
-//	            // Create and return the OrderDTO with the products
-//	            return new OrderDTO(
-//	                order.getOrder_id(),
-//	                order.getCust().getCust_Id(),
-//	                order.getCust().getName(),
-//	                order.getSupplier() != null ? order.getSupplier().getSupplier_name() : "no supplier",
-//	                order.getStatus(),
-//	                order.getPayment().getStatus(),
-//	                productDTOs
-//	            );
-//	        })
-//	        .collect(Collectors.toList());
-//	}
 	@Transactional
 	public List<OrderDTO> getAllOrders() {
 	    List<Order> orders = o_repo.findAll();
@@ -183,9 +154,6 @@ public class Admin_Service {
 		o_repo.save(o);
 	}
 
-//	public void removeOrderById(int id) {
-//		o_repo.deleteById(id);
-//	}
 
 	public void removeAllOrders() {
 		List<Order>orders=o_repo.findAll();
@@ -221,9 +189,6 @@ public class Admin_Service {
 			c_repo.deleteAll();
 	}
 
-//	public void removeCustomerById(int id) {
-//		c_repo.deleteById(id);
-//	}
 
 	public List<CustomerDTO> getAllCustomers() {
 		List<Customer>customers= c_repo.findAll();
@@ -259,12 +224,12 @@ public class Admin_Service {
 			 new EmptyFieldException();
 		}
 		user.setName(customer.getName());
-		user.setPassword(password);
+		user.setPassword(passwordEncoder.encode(password));
 		user.setRole("CUSTOMER");
 		u_repo.save(user);
 		 c_repo.save(customer);
 		sendEmail(customer.getEmail(),password,user.getId(),customer.getCust_Id());
-//		user.setCustomer(customer);
+
 		
 	
 	}
@@ -322,35 +287,6 @@ public class Admin_Service {
 	}
 
 
-//	public void removeAllProducts() {
-//		p_repo.deleteAll();
-//	}
-//
-
-//	@Transactional
-//	public void removeAllProducts() {
-//	    // Ensure the orders are persisted
-//	    List<Order> orders = o_repo.findAll();  // Fetch orders first if not already persisted
-//
-//	    for (Order order : orders) {
-//	        // Ensure the products are removed from the order or handled properly
-//	        for (Product product : order.getProd()) {
-//	            // Handle your deletion logic, e.g. remove the product from the order
-//	            p_repo.delete(product);  // Deleting individual product
-//	        }
-//	        
-//	        // Optionally remove the relationship between Order and Product if necessary
-//	        order.getProd().clear();  // Remove products from the order
-//	        o_repo.save(order);  // Save the updated order
-//
-//	        // Delete the order if necessary
-//	        o_repo.delete(order);  // Only delete the order if you intend to delete it as well
-//	    }
-//	}
-//	
-//	public void removeProductById(int id) {
-//		p_repo.deleteById(id);
-//	}
 
 
 	public void removeUserById(int id) {

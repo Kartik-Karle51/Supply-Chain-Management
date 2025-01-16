@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,13 +37,16 @@ public class CustomerService {
 	@Autowired
 	PaymentRepo paymentRepo;
 	
+	@Autowired
+    private PasswordEncoder passwordEncoder;
+	
 	//For Changing Password
 	public void changePassword(int id,String oldPass,String pass) {
 		AllUsers user=u_repo.findById(id).get();
 		if(!user.getPassword().equals(oldPass)) {
 			new PasswordMismatchException();
 		}
-		user.setPassword(pass);
+		user.setPassword(passwordEncoder.encode(pass));
 		u_repo.save(user);
 	}
 

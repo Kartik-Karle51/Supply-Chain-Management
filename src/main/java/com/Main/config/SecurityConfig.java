@@ -20,18 +20,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
-//import com.Main.Service.CustomUserService;
+import com.Main.Service.CustomUserService;
 
-//import com.Main.Service.UserService;
 
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-//	
-//	@Autowired
-//	CustomUserService service;
+	
+	@Autowired
+	CustomUserService service;
 	
 	 @Bean
 	    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -39,7 +38,8 @@ public class SecurityConfig {
 	                .csrf(Customizer -> Customizer.disable())
 	                .authorizeHttpRequests(request -> request
 	                		.requestMatchers("/admin/**").hasRole("ADMIN")
-	                		.anyRequest().permitAll())
+	                		.requestMatchers("/customer/**").hasRole("CUSTOMER")
+	                		.requestMatchers("/supplier/**").hasRole("SUPPLIER"))
 	                .formLogin(Customizer.withDefaults())
 	                .httpBasic(Customizer.withDefaults())
 	      
@@ -47,31 +47,31 @@ public class SecurityConfig {
 	                .build();
 	    }
 
-	 
-	 @Bean 
-	 public UserDetailsService usd() {
-		 UserDetails user1=User
-				 .withDefaultPasswordEncoder()
-				 .username("admin")
-				 .password("KK@123")
-				 .roles("ADMIN")
-				 .build();
-		 
-		 return new InMemoryUserDetailsManager(user1);
-	 }
+//	 
+//	 @Bean 
+//	 public UserDetailsService usd() {
+//		 UserDetails user1=User
+//				 .withDefaultPasswordEncoder()
+//				 .username("admin")
+//				 .password("KK@123")
+//				 .roles("ADMIN")
+//				 .build();
+//		 
+//		 return new InMemoryUserDetailsManager(user1);
+//	 }
 	
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
-//
-//    @Bean
-//    public AuthenticationProvider authenticationProvider() {
-//    	DaoAuthenticationProvider dAP=new DaoAuthenticationProvider();
-//    	dAP.setUserDetailsService(service);
-//    	dAP.setPasswordEncoder(passwordEncoder());
-//    	return dAP;
-//    }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+    	DaoAuthenticationProvider dAP=new DaoAuthenticationProvider();
+    	dAP.setUserDetailsService(service);
+    	dAP.setPasswordEncoder(passwordEncoder());
+    	return dAP;
+    }
 
 
     
