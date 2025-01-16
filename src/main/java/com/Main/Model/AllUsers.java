@@ -12,7 +12,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "AllUsersDetails")
-public class AllUsers {//implements UserDetails {
+public class AllUsers implements UserDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,14 +36,9 @@ public class AllUsers {//implements UserDetails {
 		this.name = name;
 		this.password = password;
 		this.role = role;
-//		this.customer = customer;
+
 	}
-//	public Customer getCustomer() {
-//		return customer;
-//	}
-//	public void setCustomer(Customer customer) {
-//		this.customer = customer;
-//	}
+
 	public AllUsers() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -73,16 +68,16 @@ public class AllUsers {//implements UserDetails {
 		return role;
 	}
 	public void setRole(String role) {
-		this.role = role;
+		this.role = "ROLE_"+role;
 	}
-//	@Override
-//	public Collection<? extends GrantedAuthority> getAuthorities() {
-//		 return Collections.singletonList(new SimpleGrantedAuthority(this.role));
-//	}
-//	@Override
-//	public String getUsername() {
-//		// TODO Auto-generated method stub
-//		return name;
-//	}
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		 return Collections.singletonList(new SimpleGrantedAuthority(this.role));
+	}
+	@Override
+	public String getUsername() {
+		// TODO Auto-generated method stub
+		return name;
+	}
 	
 }
